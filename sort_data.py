@@ -74,16 +74,20 @@ def network ():
     siamese.load_weights('test_15_32.h5')
     return siamese
 
+def sort_list(data):
+    new_dir = WORK_PATH + str(random.randint(1, 1000000))
+    os.mkdir(new_dir)
+    print(len(data))
+    cv2.imwrite(new_dir + '\\' + str(0) + '.jpg', data[0])
+    for i in range(1, len(data)):
+        pair = [[data[0], data[i]]]
+        pair = np.array(pair)
+        predictions = siamese.predict([pair[:, 0], pair[:, 1]])
+        if predictions[0][0] > 0.7:
+            cv2.imwrite(new_dir + '\\' + str(i) + '.jpg', data[i])
+            print(i)
 
 data = get_foto(PATH_DATA)
 siamese = network()
-print(len(data))
-cv2.imwrite(WORK_PATH + 'ss\\' + str(0) + '.jpg', data[0])
-for i in range(1, len(data)):
-    pair = []
-    pair = [[data[0], data[i]]]
-    pair = np.array(pair)
-    predictions = siamese.predict([pair[:, 0], pair[:, 1]])
-    if predictions[0][0] > 0.6:
-        cv2.imwrite(WORK_PATH + 'ss\\' + str(i) + '.jpg', data[i])
-        print(i)
+sort_list(data)
+
