@@ -2,7 +2,6 @@ import random
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import Model
 from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 import os
@@ -17,7 +16,7 @@ PATCH_TREIN = 'E:\project\siam\data'
 PATCH_VAL = 'E:\project\siam\set_val'
 PATCH_TEST = 'E:\project\siam\set_test'
 
-epochs = 30
+epochs = 15
 batch_size = 32
 margin = 1  # Наценка на конструктивный убыток.
 
@@ -27,16 +26,15 @@ def data_set_read(patch):
     foto = []
     list = os.listdir(patch)
     for i in list:
-        if os.path.isdir(patch + '/' + i):
-            tmp = os.listdir(patch + '/' + i)
+        if os.path.isdir(patch + '\\' + i):
+            tmp = os.listdir(patch + '\\' + i)
             for a in tmp:
-                image = cv2.imread(patch + '/' + i + '/' + a)
+                image = cv2.imread(patch + '\\' + i + '\\' + a)
                 foto.append(image[:, :, 0])
                 index_foto.append(index)
             index += 1
     index_foto = np.array(index_foto)
     foto = np.array(foto)
-    #foto = np.resize(foto, (len(foto), 100, 100, 1))
     return foto, index_foto
 
 trein_x, trein_y = data_set_read(PATCH_TREIN)
@@ -281,7 +279,7 @@ def plt_metric(history, metric, title, has_valid=True):
     plt.show()
 
 
-Model().save_weights('')
+siamese.save_weights('test_15_32.h5')
 # Plot the accuracy
 plt_metric(history=history.history, metric="accuracy", title="Model accuracy")
 
@@ -292,5 +290,5 @@ results = siamese.evaluate([x_test_1, x_test_2], labels_test)
 print("test loss, test acc:", results)
 
 predictions = siamese.predict([x_test_1, x_test_2])
-visualize(pairs_test, labels_test, to_show=4, predictions=predictions, test=True, num_col=6)
+visualize(pairs_test, labels_test, to_show=4, predictions=predictions, test=True, num_col=8)
 

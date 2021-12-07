@@ -2,14 +2,13 @@ import random
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import Model
 from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 import os
 import cv2
 
-PATH_DATA = 'E:\project\siam\set_s0'
-WORK_PATH = 'E:\project\siam'
+PATH_DATA = 'E:\project\siam\set_s0\\'
+WORK_PATH = 'E:\project\siam\\'
 
 def get_foto(patch):
     """ Принимает путь (patch) к файлам.
@@ -18,7 +17,7 @@ def get_foto(patch):
     foto = []
     list = os.listdir(patch)
     for i in list:
-        image = cv2.imread(patch + '/' + i)
+        image = cv2.imread(patch + i)
         foto.append(image[:, :, 0])
     foto = np.array(foto)
     return foto
@@ -40,12 +39,10 @@ def euclidean_distance(vects):
     sum_square = tf.math.reduce_sum(tf.math.square(x - y), axis=1, keepdims=True)
     return tf.math.sqrt(tf.math.maximum(sum_square, tf.keras.backend.epsilon()))
 
-def network (foto_x, foto_y):
-    """Принимает два массива х- образец, y - распозноваемые.
-    Возвращает предсказание нейросети"""
-    pair = []
-    pair = [[foto_x, foto_y]]
-    pair = np.array(pair)
+def network ():
+    """Собирает сеть, загружает веса.
+    Возвращает сеть."""
+
     input = layers.Input((100, 100, 1))
     x = tf.keras.layers.BatchNormalization()(input)
     x = layers.Conv2D(64, (5, 5), activation="tanh")(x)
@@ -74,10 +71,19 @@ def network (foto_x, foto_y):
     output_layer = layers.Dense(1, activation="sigmoid")(merge_layer)
     siamese = keras.Model(inputs=[input_1, input_2], outputs=output_layer)
 
-    siamese.load_weights('')
-    predictions = siamese.predict([pair[:, 0], pair[:, 1]])
-    print(predictions)
+    siamese.load_weights('test_15_32.h5')
+    return siamese
+
 
 data = get_foto(PATH_DATA)
-network(data[0], data[1])
-
+siamese = network()
+print(len(data))
+cv2.imwrite(WORK_PATH + 'ss\\' + str(0) + '.jpg', data[0])
+for i in range(1, len(data)):
+    pair = []
+    pair = [[data[0], data[i]]]
+    pair = np.array(pair)
+    predictions = siamese.predict([pair[:, 0], pair[:, 1]])
+    if predictions[0][0] > 0.6:
+        cv2.imwrite(WORK_PATH + 'ss\\' + str(i) + '.jpg', data[i])
+        print(i)
