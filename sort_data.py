@@ -74,7 +74,7 @@ def network (foto_x, foto_y):
     output_layer = layers.Dense(1, activation="sigmoid")(merge_layer)
     siamese = keras.Model(inputs=[input_1, input_2], outputs=output_layer)
 
-    siamese.load_weights('test_10_16.h5')
+    siamese.load_weights('')
     predictions = siamese.predict([pair[:, 0], pair[:, 1]])
     print(predictions)
 

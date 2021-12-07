@@ -281,7 +281,7 @@ def plt_metric(history, metric, title, has_valid=True):
     plt.show()
 
 
-Model().save_weights('test_30.h5')
+Model().save_weights('')
 # Plot the accuracy
 plt_metric(history=history.history, metric="accuracy", title="Model accuracy")
 
