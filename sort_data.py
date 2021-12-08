@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import os
 import cv2
 
-PATH_DATA = 'E:\project\siam\set_s0\\'
-WORK_PATH = 'E:\project\siam\\'
+PATH_DATA = 'c:\project\siam\set_s0\\'
+WORK_PATH = 'c:\project\siam\\'
 
 def get_foto(patch):
     """ Принимает путь (patch) к файлам.
@@ -71,10 +71,13 @@ def network ():
     output_layer = layers.Dense(1, activation="sigmoid")(merge_layer)
     siamese = keras.Model(inputs=[input_1, input_2], outputs=output_layer)
 
-    siamese.load_weights('test_15_32.h5')
+    siamese.load_weights('test_2_32.h5')
     return siamese
 
 def sort_list(data):
+    index_del = []
+    index_del.append(0)
+    new_data = []
     new_dir = WORK_PATH + str(random.randint(1, 1000000))
     os.mkdir(new_dir)
     print(len(data))
@@ -84,10 +87,14 @@ def sort_list(data):
         pair = np.array(pair)
         predictions = siamese.predict([pair[:, 0], pair[:, 1]])
         if predictions[0][0] > 0.7:
+            index_del.append(i)
             cv2.imwrite(new_dir + '\\' + str(i) + '.jpg', data[i])
             print(i)
-
+    for i in range(0, len(data)):
+        if i not in index_del:
+            new_data.append(data[i])
+    return new_data
 data = get_foto(PATH_DATA)
 siamese = network()
-sort_list(data)
+data = sort_list(data)
 
