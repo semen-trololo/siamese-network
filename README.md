@@ -6,7 +6,7 @@ create and test
 python (3.9)
 tensorflow (2.7.0)
 matplotlib (3.5.0)
-opencv-python (3.5.4.60)
+opencv-python (4.5.4.60)
 # Scripts
 siam.py - Обучени и сохранение весов сети.
 
