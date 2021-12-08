@@ -45,16 +45,16 @@ def network ():
 
     input = layers.Input((100, 100, 1))
     x = tf.keras.layers.BatchNormalization()(input)
-    x = layers.Conv2D(64, (5, 5), activation="tanh")(x)
+    x = layers.Conv2D(8, (5, 5), activation="tanh")(x)
     x = layers.AveragePooling2D(pool_size=(2, 2))(x)
-    x = layers.Conv2D(128, (3, 3), activation="tanh")(x)
+    x = layers.Conv2D(16, (3, 3), activation="tanh")(x)
     x = layers.AveragePooling2D(pool_size=(2, 2))(x)
     x = layers.Flatten()(x)
 
     x = tf.keras.layers.BatchNormalization()(x)
-    x = layers.Dense(1000, activation="tanh")(x)
+    #x = layers.Dense(1000, activation="tanh")(x)
     # x = layers.Dropout(0.25)(x)
-    x = layers.Dense(100, activation="tanh")(x)
+    x = layers.Dense(10, activation="tanh")(x)
     embedding_network = keras.Model(input, x)
 
     input_1 = layers.Input((100, 100, 1))
@@ -86,7 +86,7 @@ def sort_list(data):
         pair = [[data[0], data[i]]]
         pair = np.array(pair)
         predictions = siamese.predict([pair[:, 0], pair[:, 1]])
-        if predictions[0][0] > 0.7:
+        if predictions[0][0] > 0.75:
             index_del.append(i)
             cv2.imwrite(new_dir + '\\' + str(i) + '.jpg', data[i])
             print(i)
@@ -96,5 +96,6 @@ def sort_list(data):
     return new_data
 data = get_foto(PATH_DATA)
 siamese = network()
-data = sort_list(data)
+while len(data) > 2:
+    data = sort_list(data)
 
