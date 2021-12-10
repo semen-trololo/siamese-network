@@ -73,7 +73,12 @@ def network ():
 
     siamese.load_weights('test_2_32.h5')
     return siamese
-
+def creat_pair(data):
+    pair = []
+    for i in range(1, len(data)):
+        pair.append([[data[0], data[i]]])
+    pair = np.array(pair)
+    return pair
 def sort_list(data):
     index_del = []
     index_del.append(0)
@@ -96,6 +101,9 @@ def sort_list(data):
     return new_data
 data = get_foto(PATH_DATA)
 siamese = network()
-while len(data) > 2:
-    data = sort_list(data)
+pair = creat_pair(data)
+predictions = siamese.predict([pair[:, 0], pair[:, 1]])
+#while len(data) > 2:
+    #data = sort_list(data)
+
 
