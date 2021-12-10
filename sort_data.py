@@ -76,7 +76,7 @@ def network ():
 def creat_pair(data):
     pair = []
     for i in range(1, len(data)):
-        pair.append([[data[0], data[i]]])
+        pair += [[data[0], data[i]]]
     pair = np.array(pair)
     return pair
 def sort_list(data):
@@ -101,8 +101,26 @@ def sort_list(data):
     return new_data
 data = get_foto(PATH_DATA)
 siamese = network()
-pair = creat_pair(data)
-predictions = siamese.predict([pair[:, 0], pair[:, 1]])
+while len(data) > 2:
+    pair = creat_pair(data)
+    x_train_1 = pair[:, 0]
+    x_train_2 = pair[:, 1]
+    index_del = []
+    predictions = siamese.predict([pair[:, 0], pair[:, 1]])
+    print('Go save..')
+    new_dir = WORK_PATH + str(random.randint(1, 1000000))
+    os.mkdir(new_dir)
+    cv2.imwrite(new_dir + '\\' + str(0) + '.jpg', pair[0, 0])
+    for i in range(0, len(predictions)):
+        if predictions[i][0] > 0.70:
+            cv2.imwrite(new_dir + '\\' + str(i) + '.jpg', pair[i, 1])
+            index_del.append(i + 1)
+    new_data = []
+    for i in range(0, len(data)):
+        if i not in index_del:
+            new_data.append(data[i])
+    data = new_data
+
 #while len(data) > 2:
     #data = sort_list(data)
 
