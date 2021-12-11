@@ -10,7 +10,7 @@ import cv2
 # python (3.9)
 # tensorflow (2.7.0)
 # matplotlib (3.5.0)
-# opencv-python (3.5.4.60)
+# opencv-python (4.5.4.60)
 
 PATCH_TREIN = 'E:\project\siam\data'
 PATCH_VAL = 'E:\project\siam\set_val'
@@ -188,6 +188,7 @@ x = tf.keras.layers.BatchNormalization()(input)
 x = layers.Conv2D(64, (5, 5), activation="tanh")(x)
 x = layers.AveragePooling2D(pool_size=(2, 2))(x)
 x = layers.Conv2D(128, (3, 3), activation="tanh")(x)
+x = layers.Conv2D(128, (3, 3), activation="tanh")(x)
 x = layers.AveragePooling2D(pool_size=(2, 2))(x)
 x = layers.Flatten()(x)
 
@@ -279,7 +280,7 @@ def plt_metric(history, metric, title, has_valid=True):
     plt.show()
 
 
-siamese.save_weights('test_15_32.h5')
+siamese.save_weights('test_10_32_1.h5')
 # Plot the accuracy
 plt_metric(history=history.history, metric="accuracy", title="Model accuracy")
 

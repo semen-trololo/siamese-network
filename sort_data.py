@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import os
 import cv2
 
-PATH_DATA = 'c:\project\siam\set_s0\\'
-WORK_PATH = 'c:\project\siam\\'
+PATH_DATA = 'e:\project\siam\set_s0\\'
+WORK_PATH = 'e:\project\siam\\sort\\'
 
 def get_foto(patch):
     """ Принимает путь (patch) к файлам.
@@ -45,16 +45,20 @@ def network ():
 
     input = layers.Input((100, 100, 1))
     x = tf.keras.layers.BatchNormalization()(input)
-    x = layers.Conv2D(8, (5, 5), activation="tanh")(x)
+    #x = layers.Conv2D(8, (5, 5), activation="tanh")(x)
+    x = layers.Conv2D(64, (5, 5), activation="tanh")(x)
     x = layers.AveragePooling2D(pool_size=(2, 2))(x)
-    x = layers.Conv2D(16, (3, 3), activation="tanh")(x)
+    x = layers.Conv2D(128, (3, 3), activation="tanh")(x)
+    x = layers.Conv2D(128, (3, 3), activation="tanh")(x)
+    #x = layers.Conv2D(16, (3, 3), activation="tanh")(x)
     x = layers.AveragePooling2D(pool_size=(2, 2))(x)
     x = layers.Flatten()(x)
 
     x = tf.keras.layers.BatchNormalization()(x)
-    #x = layers.Dense(1000, activation="tanh")(x)
+    #x = layers.Dense(10, activation="tanh")(x)
+    x = layers.Dense(1000, activation="tanh")(x)
     # x = layers.Dropout(0.25)(x)
-    x = layers.Dense(10, activation="tanh")(x)
+    x = layers.Dense(100, activation="tanh")(x)
     embedding_network = keras.Model(input, x)
 
     input_1 = layers.Input((100, 100, 1))
@@ -71,48 +75,34 @@ def network ():
     output_layer = layers.Dense(1, activation="sigmoid")(merge_layer)
     siamese = keras.Model(inputs=[input_1, input_2], outputs=output_layer)
 
-    siamese.load_weights('test_2_32.h5')
+    #siamese.load_weights('test_2_32.h5')
+    siamese.load_weights('test_10_32_1.h5')
     return siamese
+
 def creat_pair(data):
+    """ Принимает масиф картинок. Возвращает масиф пар картинок"""
     pair = []
     for i in range(1, len(data)):
         pair += [[data[0], data[i]]]
     pair = np.array(pair)
     return pair
-def sort_list(data):
-    index_del = []
-    index_del.append(0)
-    new_data = []
-    new_dir = WORK_PATH + str(random.randint(1, 1000000))
-    os.mkdir(new_dir)
-    print(len(data))
-    cv2.imwrite(new_dir + '\\' + str(0) + '.jpg', data[0])
-    for i in range(1, len(data)):
-        pair = [[data[0], data[i]]]
-        pair = np.array(pair)
-        predictions = siamese.predict([pair[:, 0], pair[:, 1]])
-        if predictions[0][0] > 0.75:
-            index_del.append(i)
-            cv2.imwrite(new_dir + '\\' + str(i) + '.jpg', data[i])
-            print(i)
-    for i in range(0, len(data)):
-        if i not in index_del:
-            new_data.append(data[i])
-    return new_data
+
 data = get_foto(PATH_DATA)
 siamese = network()
 while len(data) > 2:
+    print(len(data), ' size')
     pair = creat_pair(data)
-    x_train_1 = pair[:, 0]
-    x_train_2 = pair[:, 1]
+    #x_train_1 = pair[:, 0]
+    #x_train_2 = pair[:, 1]
     index_del = []
+    index_del.append(0)
     predictions = siamese.predict([pair[:, 0], pair[:, 1]])
     print('Go save..')
     new_dir = WORK_PATH + str(random.randint(1, 1000000))
     os.mkdir(new_dir)
     cv2.imwrite(new_dir + '\\' + str(0) + '.jpg', pair[0, 0])
     for i in range(0, len(predictions)):
-        if predictions[i][0] > 0.70:
+        if predictions[i][0] > 0.80:
             cv2.imwrite(new_dir + '\\' + str(i) + '.jpg', pair[i, 1])
             index_del.append(i + 1)
     new_data = []
@@ -120,8 +110,4 @@ while len(data) > 2:
         if i not in index_del:
             new_data.append(data[i])
     data = new_data
-
-#while len(data) > 2:
-    #data = sort_list(data)
-
 
